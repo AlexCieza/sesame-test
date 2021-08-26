@@ -1,0 +1,8 @@
+#index:
+#    path: /
+#    controller: App\Sellers\Entrypoint\Controller\AddSellerController::index
+
+sellers.add:
+    path: /v1/sellers
+    controller: App\Sellers\Entrypoint\Controller\AddSellerController::add
+    methods: [POST]

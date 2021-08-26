@@ -1,0 +1,7 @@
+imports:
+    - { resource: context/sellers/services.yaml }
+
+services:
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }

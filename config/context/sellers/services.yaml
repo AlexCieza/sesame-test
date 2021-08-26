@@ -1,0 +1,45 @@
+imports:
+  - { resource: entrypoint/commands.yaml }
+  #- { resource: repositories.yaml }
+
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  App\Sellers\Domain\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../src/Sellers/Domain/*'
+
+  App\Sellers\Infrastructure\:
+    autowire: true
+    autoconfigure: true
+    resource: '../../../src/Sellers/Infrastructure/*'
+    exclude: '../../../src/Sellers/Infrastructure/{Domain,Projection}/Model/*/*Repository.php'
+
+  App\Sellers\Infrastructure\Domain\Model\Seller\DbalSellerRepository:
+    class: App\Sellers\Infrastructure\Domain\Model\Seller\DbalSellerRepository
+    arguments:
+      $connection: '@connection.mysql.promofarma'
+
+  App\Sellers\Domain\Service\Seller\SellerExistsCheckerById:
+    class: App\Sellers\Domain\Service\Seller\SellerExistsCheckerById
+    arguments:
+      $sellerRepository: '@App\Sellers\Infrastructure\Domain\Model\Seller\DbalSellerRepository'
+
+  App\Sellers\Domain\Service\Seller\SellerCreator:
+    class: App\Sellers\Domain\Service\Seller\SellerCreator
+    arguments:
+      $sellerRepository: '@App\Sellers\Infrastructure\Domain\Model\Seller\DbalSellerRepository'
+
+  App\Sellers\Application\Command\Seller\Add\AddSellerHandler:
+    class: App\Sellers\Application\Command\Seller\Add\AddSellerHandler
+    arguments:
+      $sellerExistsCheckerById: '@App\Sellers\Domain\Service\Seller\SellerExistsCheckerById'
+      $sellerCreator: '@App\Sellers\Domain\Service\Seller\SellerCreator'
+    tags:
+      - { name: tactician.handler, command: App\Sellers\Application\Command\Seller\Add\AddSellerCommand }
+
+
